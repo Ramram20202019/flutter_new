@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
 import 'package:flushbar/flushbar.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
 import 'main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -434,6 +435,7 @@ class _bookaslot2 extends State<bookaslot2> with WidgetsBindingObserver {
           onPressed: () async{
             try {
               await FirebaseAuth.instance.signOut();
+
               Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.pushReplacement(
                   context, MaterialPageRoute(
@@ -458,6 +460,8 @@ class _bookaslot2 extends State<bookaslot2> with WidgetsBindingObserver {
                 icon: Icon(Icons.thumb_up, color: Colors.white,),
 
               ).show(context);
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.remove('email');
             }
             catch (e) {
               print(e.message);

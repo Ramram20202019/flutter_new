@@ -6,14 +6,19 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:async';
 import 'package:flushbar/flushbar.dart';
 import 'bookaslot2.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 
 
-
-
-void main() => runApp(MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var email = prefs.getString('email');
+  print(email);
+  runApp(MaterialApp(home: email == null ? MyApp() : bookaslot2(username: email)));
+}
 
 class MyApp extends StatelessWidget{
   @override
@@ -79,6 +84,8 @@ class _Myhomepagestate extends State<MyHomePage> with WidgetsBindingObserver{
         print('User added to the database');
       }
       if(user != null){
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('email', user.email);
         Navigator.push(context, MaterialPageRoute(
             builder: (context) => bookaslot2(username: user.email,)));}
     }catch(e){print(e);}

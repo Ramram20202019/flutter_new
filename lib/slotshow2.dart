@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -268,6 +269,7 @@ class _slotshow2 extends State<slotshow2> with WidgetsBindingObserver{
           onPressed: () async{
             try {
               await FirebaseAuth.instance.signOut();
+
               Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.pushReplacement(
                   context, MaterialPageRoute(
@@ -292,6 +294,8 @@ class _slotshow2 extends State<slotshow2> with WidgetsBindingObserver{
                 icon: Icon(Icons.thumb_up, color: Colors.white,),
 
               ).show(context);
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.remove('email');
             }
             catch (e) {
               print(e.message);

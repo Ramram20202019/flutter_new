@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
 import 'slotshow2.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -128,9 +129,9 @@ class _choosealocation2state extends State<choosealocation2> with TickerProvider
               doc1[0].documentID).delete();
 
 
-          Navigator.push(
+          Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) =>
-              slotshow2(slotno: i, username: "${widget.username}",)));
+              slotshow2(slotno: i, username: "${widget.username}",))).then((val) => Navigator.of(context).pop());
         }
         else{QuerySnapshot q2 = await Firestore.instance.collection('Slots').document('Phase-3').collection('totslots')
             .where('Slot_no', isEqualTo: i)
@@ -141,9 +142,9 @@ class _choosealocation2state extends State<choosealocation2> with TickerProvider
             doc1[0].documentID).delete();
 
 
-        Navigator.push(
+        Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) =>
-            slotshow2(slotno: i, username: "${widget.username}",)));}
+            slotshow2(slotno: i, username: "${widget.username}",))).then((val) => Navigator.of(context).pop());}
 
 
       }
@@ -382,9 +383,6 @@ class _choosealocation2state extends State<choosealocation2> with TickerProvider
           onPressed: () async{
             try {
               await FirebaseAuth.instance.signOut();
-
-
-
               Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.pushReplacement(
                   context, MaterialPageRoute(
@@ -409,6 +407,8 @@ class _choosealocation2state extends State<choosealocation2> with TickerProvider
                 icon: Icon(Icons.thumb_up, color: Colors.white,),
 
               ).show(context);
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.remove('email');
             }
             catch (e) {
               print(e.message);

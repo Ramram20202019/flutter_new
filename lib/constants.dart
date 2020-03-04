@@ -1,4 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 
 const slots = 'Slots';
@@ -70,6 +73,7 @@ Future getdataE1() async {
   QuerySnapshot q1 = await Firestore.instance.collection(emp).orderBy(name).getDocuments();
   return q1.documents;
 }
+
 
 
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
 import 'package:flushbar/flushbar.dart';
@@ -226,6 +227,14 @@ class _bookaslot2 extends State<bookaslot2> with WidgetsBindingObserver {
   Widget _boxes(String _image, double lat, double long, String ParkName) {
     return GestureDetector(
       onTap: () async {
+        Fluttertoast.showToast(
+            msg: "Loading.. Please Wait",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIos: 1,
+            backgroundColor: Colors.blue,
+            textColor: Colors.white,
+            fontSize: 20.0);
         switch(ParkName) {
           case 'Ascendas IT Park, Taramani':
             var pos = await location.getLocation();
@@ -236,13 +245,17 @@ class _bookaslot2 extends State<bookaslot2> with WidgetsBindingObserver {
               Alert(context: context,
                   title: "You already have a booked slot\t" + doc[0]['Slot_no'],
                   type: AlertType.error,
+                  style: AlertStyle(
+                    animationType: AnimationType.grow,
+                    isCloseButton: false,
+                  ),
                   buttons: [
                     DialogButton(
                       child: Text(
                         "OK",
                         style: TextStyle(color: Colors.white, fontSize: 20),
                       ),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                       width: 120,
                     ),
 
@@ -258,13 +271,17 @@ class _bookaslot2 extends State<bookaslot2> with WidgetsBindingObserver {
               else{Alert(context: context,
                   title: "Cannot book a slot, if you are more than 1 KM from the parking location",
                   type: AlertType.error,
+                  style: AlertStyle(
+                    animationType: AnimationType.grow,
+                    isCloseButton: false,
+                  ),
                   buttons: [
                     DialogButton(
                       child: Text(
                         "OK",
                         style: TextStyle(color: Colors.white, fontSize: 20),
                       ),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                       width: 120,
                     ),
 
@@ -418,13 +435,17 @@ class _bookaslot2 extends State<bookaslot2> with WidgetsBindingObserver {
       context: context,
       type: AlertType.warning,
       title: "Are you sure you want to Logout? ",
+      style: AlertStyle(
+        animationType: AnimationType.grow,
+        isCloseButton: false,
+      ),
       buttons: [
         DialogButton(
           child: Text(
             "NO",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
           width: 120,
         ),
         DialogButton(
@@ -433,9 +454,11 @@ class _bookaslot2 extends State<bookaslot2> with WidgetsBindingObserver {
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
           onPressed: () async{
+            Navigator.of(context, rootNavigator: true).pop();
             try {
               await FirebaseAuth.instance.signOut();
-
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.remove('email');
               Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.pushReplacement(
                   context, MaterialPageRoute(
@@ -460,8 +483,6 @@ class _bookaslot2 extends State<bookaslot2> with WidgetsBindingObserver {
                 icon: Icon(Icons.thumb_up, color: Colors.white,),
 
               ).show(context);
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              prefs.remove('email');
             }
             catch (e) {
               print(e.message);

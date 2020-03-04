@@ -1,5 +1,3 @@
-
-
 import 'package:flutter_app5/bookaslot2.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -82,115 +80,131 @@ class _slotshow2 extends State<slotshow2> with WidgetsBindingObserver{
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-            backgroundColor: Colors.white,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: SafeArea(
+          child: Scaffold(
+              backgroundColor: Colors.white,
 
-            appBar: AppBar(
-              leading:
-              IconButton(
-                icon: Icon(Icons.arrow_back_ios),
+              appBar: AppBar(
+                leading:
+                IconButton(
+                  icon: Icon(Icons.arrow_back_ios),
 
-                onPressed: () { Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => bookaslot2(username: '${widget.username}',)));
+                  onPressed: () { Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => bookaslot2(username: '${widget.username}',)));
 
-                },
+                  },
+                ),
+
+                title: Text('Your Bookings',textAlign: TextAlign.center,),
+                actions: <Widget>[
+                  Transform.scale(scale: 0.7,child: new IconButton(icon: Icon(MdiIcons.logout, color: Color(0xFFFFFFFF), size: 35.0,), onPressed: (){_signout(context);}))],
+
+                backgroundColor: Colors.blue,
               ),
 
-              title: Text('Your Bookings',textAlign: TextAlign.center,),
-              actions: <Widget>[
-                Transform.scale(scale: 0.7,child: new IconButton(icon: Icon(MdiIcons.logout, color: Color(0xFFFFFFFF), size: 35.0,), onPressed: (){_signout(context);}))],
 
-              backgroundColor: Colors.blue,
-            ),
+              body:
+              Center(
 
+                  child:  Center(
+                    child: Scaffold(
+                      body:Container(
+                          child: FutureBuilder<String>(
+                              future: initstate(),
+                              initialData: "Loading",
+                              builder: (context, snapshot) {
 
-            body:
-            Center(
+                                return Container(
+                                  height: 100.0,
+                                  child: Card(
+                                    margin: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
+                                    child: Padding(padding: const EdgeInsets.all(12.0),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Text(snapshot.data.toString(), style: TextStyle(fontFamily: 'Roboto',fontSize: 15.0),),
+                                          Align( alignment: Alignment.centerRight,
+                                            child: IconButton(icon: Icon(Icons.cancel),
+                                              color: Colors.red,
+                                              onPressed: () async{
 
-                child:  Center(
-                  child: Scaffold(
-                    body:Container(
-                        child: FutureBuilder<String>(
-                            future: initstate(),
-                            initialData: "Loading",
-                            builder: (context, snapshot) {
+                                                bool _isbe;
+                                                QuerySnapshot querySnapshot = await Firestore.instance.collection(
+                                                    'ParkingDB')
+                                                    .where('Email', isEqualTo: '${widget.username}')
+                                                    .getDocuments();
+                                                var doc = querySnapshot.documents;
+                                                if (doc[0]['Slot_no'] != null) {_isbe = true;}
+                                                else{_isbe = false;}
 
-                              return Container(
-                                height: 100.0,
-                                child: Card(
-                                  margin: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
-                                  child: Padding(padding: const EdgeInsets.all(12.0),
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Text(snapshot.data.toString(), style: TextStyle(fontFamily: 'Roboto',fontSize: 15.0),),
-                                        Align( alignment: Alignment.centerRight,
-                                          child: IconButton(icon: Icon(Icons.cancel),
-                                            color: Colors.red,
-                                            onPressed: () async{
-
-                                              bool _isbe;
-                                              QuerySnapshot querySnapshot = await Firestore.instance.collection(
-                                                  'ParkingDB')
-                                                  .where('Email', isEqualTo: '${widget.username}')
-                                                  .getDocuments();
-                                              var doc = querySnapshot.documents;
-                                              if (doc[0]['Slot_no'] != null) {_isbe = true;}
-                                              else{_isbe = false;}
-
-                                              // ignore: unnecessary_statements
-                                              _isbe ? Alert(context: context,
-                                                  title: "Are you sure you want to cancel your booked slot?",
-                                                  type: AlertType.warning,
-                                                  buttons: [
-                                                    DialogButton(
-                                                      child: Text(
-                                                        "NO",
-                                                        style: TextStyle(color: Colors.white, fontSize: 20),
-                                                      ),
-                                                      onPressed: () => Navigator.pop(context),
-                                                      width: 120,
+                                                // ignore: unnecessary_statements
+                                                _isbe ? Alert(context: context,
+                                                    title: "Are you sure you want to Cancel your booked slot",
+                                                    type: AlertType.warning,
+                                                    style: AlertStyle(
+                                                      animationType: AnimationType.grow,
+                                                      isCloseButton: false,
                                                     ),
-                                                    DialogButton(
-                                                      child: Text(
-                                                        "YES",
-                                                        style: TextStyle(color: Colors.white, fontSize: 20),
+                                                    buttons: [
+                                                      DialogButton(
+                                                        child: Text(
+                                                          "NO",
+                                                          style: TextStyle(color: Colors.white, fontSize: 20),
+                                                        ),
+                                                        onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+                                                        width: 120,
                                                       ),
-                                                      onPressed: (){checkdata();},
-                                                      width: 120,
-                                                    ),
-                                                  ]
-                                              ).show(): null;
-                                            } ,),
-                                        ),
+                                                      DialogButton(
+                                                        child: Text(
+                                                          "YES",
+                                                          style: TextStyle(color: Colors.white, fontSize: 20),
+                                                        ),
+                                                        onPressed: () { Navigator.of(context, rootNavigator: true).pop(); checkdata();},
+                                                        width: 120,
+                                                      ),
+                                                    ]
+                                                ).show(): null;
+                                              } ,),
+                                          ),
 
-                                      ],
-                                    ),),
+                                        ],
+                                      ),),
 
 
-                                ),
-                              );
+                                  ),
+                                );
 
-                            })),
-                  ),
-                )
+                              })),
+                    ),
+                  )
 
-            )
-        )
+              )
+          )
 
+      ),
     );
   }
 
   Future<void> checkdata() async {
-    showDialog(
+    /*showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
             title: Text("Cancelling. Please Wait", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
             children: <Widget>[SpinKitThreeBounce(color: Colors.blue,),],
           );
-        });
+        });*/
+    Fluttertoast.showToast(
+        msg: "Cancelling.. Please Wait",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIos: 1,
+        backgroundColor: Colors.blue,
+        textColor: Colors.white,
+        fontSize: 20.0);
+
     QuerySnapshot querySnapshot = await Firestore.instance.collection(
         'ParkingDB')
         .where('Email', isEqualTo: '${widget.username}')
@@ -252,13 +266,17 @@ class _slotshow2 extends State<slotshow2> with WidgetsBindingObserver{
       context: context,
       type: AlertType.warning,
       title: "Are you sure you want to Logout? ",
+      style: AlertStyle(
+        animationType: AnimationType.grow,
+        isCloseButton: false,
+      ),
       buttons: [
         DialogButton(
           child: Text(
             "NO",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
           width: 120,
         ),
         DialogButton(
@@ -267,9 +285,11 @@ class _slotshow2 extends State<slotshow2> with WidgetsBindingObserver{
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
           onPressed: () async{
+            Navigator.of(context, rootNavigator: true).pop();
             try {
               await FirebaseAuth.instance.signOut();
-
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.remove('email');
               Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.pushReplacement(
                   context, MaterialPageRoute(
@@ -294,8 +314,6 @@ class _slotshow2 extends State<slotshow2> with WidgetsBindingObserver{
                 icon: Icon(Icons.thumb_up, color: Colors.white,),
 
               ).show(context);
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              prefs.remove('email');
             }
             catch (e) {
               print(e.message);
@@ -312,12 +330,6 @@ class _slotshow2 extends State<slotshow2> with WidgetsBindingObserver{
 
 
 }
-
-
-
-
-
-
 
 
 

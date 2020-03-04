@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:async';
 import 'package:flushbar/flushbar.dart';
-import 'bookaslot2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'bookaslot2.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+
 
 
 
@@ -17,7 +19,7 @@ Future<void> main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var email = prefs.getString('email');
   print(email);
-  runApp(MaterialApp(home: email == null ? MyApp() : bookaslot2(username: email)));
+  runApp(MaterialApp(home: email == null ? MyApp() : bookaslot2(username: email,)));
 }
 
 class MyApp extends StatelessWidget{
@@ -53,44 +55,88 @@ class _Myhomepagestate extends State<MyHomePage> with WidgetsBindingObserver{
     );
     final FirebaseUser user = (await _auth.signInWithCredential(credential)).user;
 
-    _scaffoldKey.currentState.showSnackBar(
-        new SnackBar(duration: new Duration(seconds: 4), content:
-        new Row(
-          children: <Widget>[
-            new CircularProgressIndicator(),
-            new Text("  Signing-In...")
-          ],
-        ),
-        ));
-    try {
-      Future<bool> ret() async {
-        QuerySnapshot q = await Firestore.instance.collection('ParkingDB')
-            .where('Email', isGreaterThan: '')
-            .getDocuments();
-        bool i1 = false;
-        var d = q.documents;
-        for (int j = 0; j < q.documents.length; j++) {
-          if (user.email == d[j]['Email'].toString()) {
-            i1 = true;
-          }
+    Future<bool> ret1() async {
+      QuerySnapshot g = await Firestore.instance.collection('Gmailuserlist')
+          .where('Email', isGreaterThan: '')
+          .getDocuments();
+      bool i1 = false;
+      var d = g.documents;
+      for (int j = 0; j < g.documents.length; j++) {
+        if (user.email == d[j]['Email'].toString()) {
+          i1 = true;
         }
-        return i1;
       }
+      return i1;
+    }
 
-      bool j = await ret();
-      if (!j) {
-        Firestore.instance.collection("ParkingDB").document().setData(
-            {'Email': user.email});
-        print('User added to the database');
+    bool gmailcheck = await ret1();
+
+    if(gmailcheck == true) {
+      _scaffoldKey.currentState.showSnackBar(
+          new SnackBar(duration: new Duration(seconds: 4), content:
+          new Row(
+            children: <Widget>[
+              new CircularProgressIndicator(),
+              new Text("  Signing-In...")
+            ],
+          ),
+          ));
+      try {
+        Future<bool> ret() async {
+          QuerySnapshot q = await Firestore.instance.collection('ParkingDB')
+              .where('Email', isGreaterThan: '')
+              .getDocuments();
+          bool i1 = false;
+          var d = q.documents;
+          for (int j = 0; j < q.documents.length; j++) {
+            if (user.email == d[j]['Email'].toString()) {
+              i1 = true;
+            }
+          }
+          return i1;
+        }
+
+        bool j = await ret();
+        if (!j) {
+          Firestore.instance.collection("ParkingDB").document().setData(
+              {'Email': user.email});
+          print('User added to the database');
+        }
+        if (user != null) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('email', user.email);
+          Navigator.push(context, MaterialPageRoute(
+              builder: (context) => bookaslot2(username: user.email,)));
+        }
+      } catch (e) {
+        print(e);
       }
-      if(user != null){
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('email', user.email);
-        Navigator.push(context, MaterialPageRoute(
-            builder: (context) => bookaslot2(username: user.email,)));}
-    }catch(e){print(e);}
-    return user;
+      return user;
+    }
 
+    else{
+      Flushbar(
+        padding: EdgeInsets.all(10),
+        borderRadius: 8,
+        backgroundColor: Colors.blue,
+        boxShadows: [
+          BoxShadow(
+            color: Colors.black45,
+            offset: Offset(3, 3),
+            blurRadius: 3,
+          ),
+        ],
+        duration: new Duration(seconds: 4),
+        dismissDirection: FlushbarDismissDirection.HORIZONTAL,
+        leftBarIndicatorColor: Colors.red,
+        forwardAnimationCurve: Curves.easeInOutCubic,
+        title: "Sorry! Invalid Access",
+        message: "Your Gmail is not authorized to login",
+        flushbarPosition: FlushbarPosition.TOP,
+        icon: Icon(Icons.warning, color: Colors.red,),
+
+      ).show(context);
+    }
   }
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -732,3 +778,11 @@ class _Myhomepagestate extends State<MyHomePage> with WidgetsBindingObserver{
      ).show();
    }
 }*/
+
+
+
+
+
+
+
+

@@ -64,15 +64,22 @@ class _choosealocation2state extends State<choosealocation2> with TickerProvider
   Widget build(BuildContext context) {
 
     void _add(i) async{
-      showDialog(
+      /*showDialog(
           context: context,
           builder: (BuildContext context) {
             return SimpleDialog(
               title: Text("Booking the Slot. Please Wait", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
               children: <Widget>[SpinKitPulse(color: Colors.blue,),],
             );
-          });
-
+          });*/
+      Fluttertoast.showToast(
+          msg: "Booking the Slot.. Please Wait",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.blue,
+          textColor: Colors.white,
+          fontSize: 20.0);
 
 
 
@@ -129,9 +136,9 @@ class _choosealocation2state extends State<choosealocation2> with TickerProvider
               doc1[0].documentID).delete();
 
 
-          Navigator.pushReplacement(
+          Navigator.push(
               context, MaterialPageRoute(builder: (context) =>
-              slotshow2(slotno: i, username: "${widget.username}",))).then((val) => Navigator.of(context).pop());
+              slotshow2(slotno: i, username: "${widget.username}",)));
         }
         else{QuerySnapshot q2 = await Firestore.instance.collection('Slots').document('Phase-3').collection('totslots')
             .where('Slot_no', isEqualTo: i)
@@ -142,9 +149,9 @@ class _choosealocation2state extends State<choosealocation2> with TickerProvider
             doc1[0].documentID).delete();
 
 
-        Navigator.pushReplacement(
+        Navigator.push(
             context, MaterialPageRoute(builder: (context) =>
-            slotshow2(slotno: i, username: "${widget.username}",))).then((val) => Navigator.of(context).pop());}
+            slotshow2(slotno: i, username: "${widget.username}",)));}
 
 
       }
@@ -366,13 +373,17 @@ class _choosealocation2state extends State<choosealocation2> with TickerProvider
       context: context,
       type: AlertType.warning,
       title: "Are you sure you want to Logout? ",
+      style: AlertStyle(
+        animationType: AnimationType.grow,
+        isCloseButton: false,
+      ),
       buttons: [
         DialogButton(
           child: Text(
             "NO",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
           width: 120,
         ),
         DialogButton(
@@ -381,8 +392,11 @@ class _choosealocation2state extends State<choosealocation2> with TickerProvider
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
           onPressed: () async{
+            Navigator.of(context, rootNavigator: true).pop();
             try {
               await FirebaseAuth.instance.signOut();
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.remove('email');
               Navigator.of(context).popUntil((route) => route.isFirst);
               Navigator.pushReplacement(
                   context, MaterialPageRoute(
@@ -407,8 +421,6 @@ class _choosealocation2state extends State<choosealocation2> with TickerProvider
                 icon: Icon(Icons.thumb_up, color: Colors.white,),
 
               ).show(context);
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              prefs.remove('email');
             }
             catch (e) {
               print(e.message);
@@ -427,3 +439,4 @@ class _choosealocation2state extends State<choosealocation2> with TickerProvider
 
 
 }
+
